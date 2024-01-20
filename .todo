@@ -1,0 +1,25 @@
+UI:
+  ☐ Look like CleanMyMac X
+  ☐ Sidebar
+
+Prayer:
+  Geolocation:
+    ☐ Fetch current location
+    ☐ Handle errors
+  Prayers:
+    ☐ Fetch current day prayers time
+    ☐ Allow user to turn on/off notification
+    ☐ Schedule notification
+
+Notes:
+  ☐ Rich text editor to take notes
+  ☐ Save notes in sqlite DB
+  ☐ Look like some notion or something similar...
+
+Scheduler:
+  ☐ Custom notification scheduler
+  ☐ Push notification in case
+
+News:
+  ☐ Fetch news
+  ☐ Render news
