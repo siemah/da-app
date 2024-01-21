@@ -1,7 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Prayers from '@/renderer/pages/prayers';
-import '@/renderer/globals.css';
 import Home from '@/renderer/pages';
+import '@/renderer/globals.css';
 
 export default function App() {
   return (

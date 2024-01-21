@@ -11,7 +11,7 @@ export default function Layout({ className, title, children }: LayoutProps) {
   return (
     <main
       className={cn(
-        `container flex flex-row gap-10 bg-gradient-to-b from-[#be7097] to-[#3d4076]`,
+        `flex flex-row gap-10 bg-gradient-to-b from-[#be7097] to-[#3d4076]`,
         className,
       )}
     >

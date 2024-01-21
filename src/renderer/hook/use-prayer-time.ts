@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import httpRequest from '@/renderer/lib/http';
 
 type UsePrayerTimes = {
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export type PrayerTimeResult = {
@@ -39,7 +39,7 @@ export default function usePrayerTimes(config: UsePrayerTimes) {
   const data = query.data ?? [];
 
   useEffect(() => {
-    if (config?.latitude !== undefined && config?.longitude !== undefined) {
+    if (!!config?.latitude && !!config?.longitude) {
       query.refetch({
         queryKey: `prayer-times`,
       });

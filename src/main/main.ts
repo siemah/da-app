@@ -147,13 +147,6 @@ function showNotification() {
 app
   .whenReady()
   .then(() => {
-    ipcMain.handle(CHANNELS.PRAYER_NOTIFICATION, async (event, ...args) => {
-      console.log(`notification invoked`, args);
-      schedule.scheduleJob('33 * * * *', () => {
-        console.log(`<<<<<<<<√ notify me>>>>>>>>`)
-        showNotification();
-      });
-    });
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
