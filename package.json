@@ -108,6 +108,7 @@
     "clsx": "^2.1.0",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
+    "electron-store": "^8.1.0",
     "electron-updater": "^6.1.4",
     "next-themes": "^0.2.1",
     "node-cron": "^3.0.3",

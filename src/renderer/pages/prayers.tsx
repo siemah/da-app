@@ -31,6 +31,29 @@ export default function Prayers() {
     message: null,
   });
   const [{ loading, data: prayerTimes }] = usePrayerTimes(coordinates.coords);
+  const onSwitch = (item: PrayerTimeResult) => (checked: boolean) => {
+    const [hh, mm] = item.time.split(':');
+    const date = new Date();
+    date.setHours(Number(hh));
+    date.setMinutes(Number(mm));
+    // date.setSeconds(date.getSeconds() + 10);
+    const ipcData = {
+      date,
+      id: item.name,
+    };
+
+    if (checked === true) {
+      window.electron.ipcRenderer.sendMessage(
+        CHANNELS.PRAYER_NOTIFICATION,
+        ipcData,
+      );
+    } else {
+      window.electron.ipcRenderer.sendMessage(
+        CHANNELS.CANCEL_NOTIFICATION,
+        ipcData,
+      );
+    }
+  };
   const renderItems = () => {
     if (loading) {
       return Array(6)
@@ -49,17 +72,6 @@ export default function Prayers() {
         ));
     }
 
-    const onSwitch = (item: PrayerTimeResult) => () => {
-      const [hh, mm] = item.time.split(':');
-      const date = new Date();
-      date.setHours(Number(hh));
-      date.setMinutes(Number(mm));
-      // date.setSeconds(date.getSeconds() + 10);
-      window.electron.ipcRenderer.sendMessage(
-        CHANNELS.PRAYER_NOTIFICATION,
-        date,
-      );
-    };
     return prayerTimes?.map((item) => (
       <li
         className="flex justify-between items-center text-white"
@@ -70,7 +82,7 @@ export default function Prayers() {
           {`: `}
           {item.time}
         </div>
-        <Switch id={`prayer-${item.name}`} onClick={onSwitch(item)} />
+        <Switch id={`prayer-${item.name}`} onCheckedChange={onSwitch(item)} />
       </li>
     ));
   };
@@ -161,10 +173,9 @@ export default function Prayers() {
                       className="h-8"
                       name="latitude"
                       id="latitude"
-                      placeholder="34.09394"
+                      placeholder="36.143104"
                       type="number"
                       step={0.000001}
-                      required
                     />
                   </div>
                   <div className="flex flex-col flex-1 gap-4">
@@ -173,10 +184,9 @@ export default function Prayers() {
                       className="h-8"
                       name="longitude"
                       id="longitude"
-                      placeholder="34.09394"
+                      placeholder="4.675993"
                       type="number"
                       step={0.000001}
-                      required
                     />
                   </div>
                 </div>
