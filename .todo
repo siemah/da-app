@@ -4,12 +4,12 @@ UI:
 
 Prayer:
   Geolocation:
-    ☐ Fetch current location
-    ☐ Handle errors
+    ✔ Fetch current location @done(24-01-21 02:07)
+    ✔ Handle errors @done(24-01-21 02:07)
   Prayers:
-    ☐ Fetch current day prayers time
+    ✔ Fetch current day prayers time @done(24-01-21 02:08)
+    ✔ Schedule notification @done(24-01-21 02:08)
     ☐ Allow user to turn on/off notification
-    ☐ Schedule notification
 
 Notes:
   ☐ Rich text editor to take notes
