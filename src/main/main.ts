@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
-import { createWindow, devConfig } from './util';
+import { createWindow, devConfig } from './utils';
 import prayersNotificationsScheduler from './ipcs/prayer-notification';
 
 ipcMain.on('ipc-example', async (event, arg) => {

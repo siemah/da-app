@@ -1,6 +1,6 @@
 UI:
   ☐ Look like CleanMyMac X
-  ☐ Sidebar
+  ✔ Sidebar @done(24-01-22 00:26)
 
 Prayer:
   Geolocation:
@@ -9,7 +9,9 @@ Prayer:
   Prayers:
     ✔ Fetch current day prayers time @done(24-01-21 02:08)
     ✔ Schedule notification @done(24-01-21 02:08)
-    ☐ Allow user to turn on/off notification
+    ✔ Allow user to turn on/off notification @done(24-01-22 00:23)
+    ☐ Save notification settings of prayers times
+    ☐ Setup prayers notifications after
 
 Notes:
   ☐ Rich text editor to take notes

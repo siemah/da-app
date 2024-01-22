@@ -22,6 +22,7 @@ export default function prayersNotificationsScheduler() {
         const notification = new Notification({
           title: 'Prayer time',
           body: "It's time for prayer time",
+          sound: 'adhan',
         });
         // notification.silent=true;
         notification.show();
