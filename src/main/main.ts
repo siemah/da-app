@@ -9,13 +9,31 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { PrismaClient } from '@prisma/client';
+import CHANNELS from '../config/channels';
 import { createWindow, devConfig } from './utils';
 import prayersNotificationsScheduler from './ipcs/prayer-notification';
 
+const prisma = new PrismaClient();
+
 ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
+  const msgTemplate = (pingPong: string) => `√ IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+ipcMain.on(CHANNELS.FETCH_NOTES, async (event) => {
+  const notes = await prisma.notes.findMany({
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      updatedAt: true,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  });
+  event.reply(CHANNELS.FETCH_NOTES, notes);
 });
 
 devConfig();

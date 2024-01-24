@@ -11,14 +11,14 @@ export default function Layout({ className, title, children }: LayoutProps) {
   return (
     <main
       className={cn(
-        `flex flex-row gap-10 bg-gradient-to-b from-[#be7097] to-[#3d4076]`,
+        `flex flex-row gap-8 bg-gradient-to-b from-[#be7097] to-[#3d4076]`,
         className,
       )}
     >
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <Sidebar className="w-72 min-h-lvh" />
+      <Sidebar className="min-w-64 min-h-lvh" />
       {children}
     </main>
   );
