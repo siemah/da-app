@@ -138,8 +138,8 @@ export default function Prayers() {
   }, []);
 
   return (
-    <Layout title="Prayer" className="h-svh py-10 pr-10">
-      <div className="flex-1 flex flex-col gap-8">
+    <Layout title="Prayer" className="h-svh">
+      <div className="flex-1 flex flex-col gap-8 py-10 pr-10">
         <h1 className="text-white text-4xl capitalize font-semibold">
           Prayers
         </h1>
