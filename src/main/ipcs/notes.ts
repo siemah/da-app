@@ -1,8 +1,7 @@
 import { ipcMain } from 'electron';
-import { PrismaClient } from '@prisma/client';
 import CHANNELS from '../../config/channels';
+import prisma from '../config/db';
 
-const prisma = new PrismaClient();
 export default function notesIPC() {
   ipcMain.on(CHANNELS.FETCH_NOTES, async (event) => {
     const notes = await prisma.notes.findMany({
