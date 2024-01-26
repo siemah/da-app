@@ -9,8 +9,10 @@ import Layout from '@/renderer/components/layout';
 import { Label } from '@/renderer/components/ui/label';
 import { Input } from '@/renderer/components/ui/input';
 import { Checkbox } from '@/renderer/components/ui/checkbox';
-import MDEditor, { commands } from '@uiw/react-md-editor';
+import MDEditor, { PreviewType, commands } from '@uiw/react-md-editor';
 import { toast } from 'sonner';
+import { BsFileEarmarkPlus, BsFileEarmarkMinus } from 'react-icons/bs';
+import { Button } from '../components/ui/button';
 
 export default function Notes() {
   const [notes, setNotes] = useState<{
@@ -23,6 +25,8 @@ export default function Notes() {
     selectedNote: null,
   });
   const [value, setValue] = useState<string>('');
+  const [editorMode, setEditorMode] = useState<PreviewType>('preview');
+  const autoFocus = editorMode === 'edit';
   const onChange = (noteContent?: string) => setValue(`${noteContent}`);
   const onCheckedChange = (noteId: number) => (isChecked: boolean) => {
     setNotes((prevState) => ({
@@ -33,6 +37,14 @@ export default function Notes() {
       return `${note.id}` === `${noteId}`;
     });
     setValue(selectedNote.content);
+  };
+  const onClick = () => {
+    setNotes({
+      ...notes,
+      selectedNote: null,
+    });
+    setValue('');
+    setEditorMode('edit');
   };
 
   useEffect(() => {
@@ -59,31 +71,51 @@ export default function Notes() {
         }));
       }
     };
+    const deleteNote = ({ message }: any) => {
+      const newNotes = [...notes.data].filter(
+        (note) => `${note.id}` !== `${notes.selectedNote}`,
+      );
+      const nextSelectedNote = newNotes?.[0]?.id || null;
+      const nextSelectedNoteContent = newNotes?.[0]?.content || '';
+      setNotes({
+        loading: false,
+        selectedNote: nextSelectedNote,
+        data: newNotes,
+      });
+      setValue(nextSelectedNoteContent);
+      toast('Removing Note', {
+        description: message,
+      });
+    };
     window.electron.ipcRenderer.on(CHANNELS.SAVE_NOTE, saveNote);
+    window.electron.ipcRenderer.on(CHANNELS.DELETE_NOTE, deleteNote);
 
     return () => {
       window.electron.ipcRenderer.off(CHANNELS.SAVE_NOTE, saveNote);
+      window.electron.ipcRenderer.off(CHANNELS.DELETE_NOTE, deleteNote);
     };
-  }, [notes.data]);
+  }, [notes.data, notes.selectedNote]);
 
   useEffect(() => {
     window.electron.ipcRenderer.once(CHANNELS.FETCH_NOTES, (...args: any[]) => {
       const [data] = args;
+      const [firstNote] = data;
       setNotes((prevState) => ({
         ...prevState,
         loading: false,
-        selectedNote: data.id,
+        selectedNote: data?.[0]?.id || null,
         data,
       }));
+      setValue(firstNote?.content || '');
     });
     window.electron.ipcRenderer.sendMessage(CHANNELS.FETCH_NOTES);
   }, []);
 
   return (
     <Layout title="Notes">
-      <div className="py-6 pr-3 flex flex-row gap-3 w-full max-h-[100vh] overflow-y-scroll">
-        <div className="flex flex-col gap-4 w-72 h-full overflow-y-scroll">
-          <div className="min-w-full flex flex-row gap-2 max-w-52 border-b border-slate-300 border-opacity-50">
+      <div className="pr-3 flex flex-row w-full h-[100vh] overflow-y-scroll">
+        <div className="py-6 flex flex-col gap-4 w-72 h-full overflow-y-scroll">
+          <div className="min-w-full flex flex-row gap-2 max-w-52 border-b border-slate-300 border-opacity-50 items-center">
             <Label htmlFor="query" className="flex items-center justify-center">
               <IoSearchOutline className="h-6 w-6 text-slate-300" />
             </Label>
@@ -93,6 +125,13 @@ export default function Notes() {
               placeholder="Search for notes titles"
               className="flex-1 font-light border-0 rounded-none text-white bg-transparent !placeholder-slate-300 text-lg pl-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!outline-none"
             />
+            <Button
+              variant="outline"
+              className="p-1 group bg-transparent hover:bg-black hover:bg-opacity-20 border-none mr-2"
+              onClick={onClick}
+            >
+              <BsFileEarmarkPlus className="h-6 w-6 text-slate-300 group-hover:text-white" />
+            </Button>
           </div>
           {/* notes items */}
           <ul className="notes-list flex flex-col gap-1">
@@ -120,7 +159,7 @@ export default function Notes() {
             ))}
           </ul>
         </div>
-        <div className="flex-1 border-l border-slate-300 border-opacity-50">
+        <div className="py-6 flex-1 border-l border-slate-300 border-opacity-50">
           <MDEditor
             value={value}
             onChange={onChange}
@@ -164,7 +203,7 @@ export default function Notes() {
                 buttonProps: { 'aria-label': 'Save note' },
                 icon: (
                   <IoSaveOutline
-                    title="Save note (ctrl + s)"
+                    title="Save note (cmd or ctrl + s)"
                     className="h-3 w-3"
                   />
                 ),
@@ -180,9 +219,28 @@ export default function Notes() {
                   });
                 },
               },
+              {
+                name: 'Delete',
+                keyCommand: 'title6',
+                shortcuts: 'ctrlcmd+d',
+                buttonProps: { 'aria-label': 'Delete note' },
+                icon: (
+                  <BsFileEarmarkMinus
+                    title="Save note (cmd or ctrl + d)"
+                    className="h-3 w-3"
+                  />
+                ),
+                execute: () => {
+                  window.electron.ipcRenderer.sendMessage(
+                    CHANNELS.DELETE_NOTE,
+                    notes.selectedNote,
+                  );
+                },
+              },
             ]}
             className="!h-full !rounded-none !bg-transparent !shadow-none [&_.w-md-editor-text]:text-slate-200 [&_.w-md-editor-toolbar]:bg-black [&_.w-md-editor-toolbar]:bg-opacity-20 [&_.w-md-editor-preview]:shadow-none [&_.w-md-editor-preview_div]:!text-slate-100 [&_.w-md-editor-text]:h-full [&_.w-md-editor-toolbar]:bg-transparent [&_.w-md-editor-toolbar_button]:text-white [&_.w-md-editor-toolbar]:border-none [&_.w-md-editor-preview_div]:bg-transparent [&_blockquote]:!text-slate-300 [&_blockquote]:!border-slate-400"
-            preview="preview"
+            preview={editorMode}
+            autoFocus={autoFocus}
           />
         </div>
       </div>

@@ -3,6 +3,7 @@ const CHANNELS = {
   CANCEL_NOTIFICATION: 'cancel_notification',
   FETCH_NOTES: 'fetch_notes',
   SAVE_NOTE: 'save_note',
+  DELETE_NOTE: 'delete_note',
 } as const;
 
 type CE = typeof CHANNELS;

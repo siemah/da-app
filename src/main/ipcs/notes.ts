@@ -49,4 +49,15 @@ export default function notesIPC() {
       });
     },
   );
+  ipcMain.on(CHANNELS.DELETE_NOTE, async (event, noteId: number) => {
+    const note = await prisma.notes.delete({
+      where: {
+        id: noteId,
+      },
+    });
+    event.reply(CHANNELS.DELETE_NOTE, {
+      message: 'Note deleted with success',
+      data: note,
+    });
+  });
 }
