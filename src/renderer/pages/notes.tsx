@@ -12,7 +12,16 @@ import { Checkbox } from '@/renderer/components/ui/checkbox';
 import MDEditor, { PreviewType, commands } from '@uiw/react-md-editor';
 import { toast } from 'sonner';
 import { BsFileEarmarkPlus, BsFileEarmarkMinus } from 'react-icons/bs';
+import { FaCircleCheck } from 'react-icons/fa6';
 import { Button } from '../components/ui/button';
+
+function SuccessCheckIcon() {
+  return (
+    <div className="flex items-center justify-center">
+      <FaCircleCheck className="h-6 w-6 text-green-500" />
+    </div>
+  );
+}
 
 export default function Notes() {
   const [notes, setNotes] = useState<{
@@ -51,6 +60,8 @@ export default function Notes() {
     const saveNote = ({ message, data, isUpdate }: any) => {
       toast('Saving Note', {
         description: message,
+        dismissible: true,
+        icon: <SuccessCheckIcon />,
       });
 
       if (isUpdate === true) {
@@ -85,6 +96,8 @@ export default function Notes() {
       setValue(nextSelectedNoteContent);
       toast('Removing Note', {
         description: message,
+        dismissible: true,
+        icon: <SuccessCheckIcon />,
       });
     };
     window.electron.ipcRenderer.on(CHANNELS.SAVE_NOTE, saveNote);
