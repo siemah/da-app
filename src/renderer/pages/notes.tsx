@@ -115,22 +115,25 @@ export default function Notes() {
     <Layout title="Notes">
       <div className="pr-3 flex flex-row w-full h-[100vh] overflow-y-scroll">
         <div className="py-6 flex flex-col gap-4 w-72 h-full overflow-y-scroll">
-          <div className="min-w-full flex flex-row gap-2 max-w-52 border-b border-slate-300 border-opacity-50 items-center">
-            <Label htmlFor="query" className="flex items-center justify-center">
-              <IoSearchOutline className="h-6 w-6 text-slate-300" />
+          <div className="group/parent min-w-full flex flex-row gap-2 max-w-52 border-b border-slate-300 has-[:focus]:border-white items-center">
+            <Label
+              htmlFor="query"
+              className="flex items-center justify-center text-slate-300 group-focus-within/parent:text-white"
+            >
+              <IoSearchOutline className="h-6 w-6" />
             </Label>
             <Input
               id="query"
               name="query"
-              placeholder="Search for notes titles"
+              placeholder="Search for notes"
               className="flex-1 font-light border-0 rounded-none text-white bg-transparent !placeholder-slate-300 text-lg pl-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!outline-none"
             />
             <Button
               variant="outline"
-              className="p-1 group bg-transparent hover:bg-black hover:bg-opacity-20 border-none mr-2"
+              className="p-1 group/btn bg-transparent hover:bg-black hover:bg-opacity-20 border-none mr-2"
               onClick={onClick}
             >
-              <BsFileEarmarkPlus className="h-6 w-6 text-slate-300 group-hover:text-white" />
+              <BsFileEarmarkPlus className="h-6 w-6 text-slate-300 group-hover/btn:text-white" />
             </Button>
           </div>
           {/* notes items */}
