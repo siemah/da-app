@@ -34,7 +34,7 @@
   ],
   "main": "./src/main/main.ts",
   "scripts": {
-    "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
+    "build": "npm run db:generate && concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
@@ -47,7 +47,8 @@
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest"
+    "test": "jest",
+    "db:generate": "prisma generate"
   },
   "browserslist": [],
   "prettier": {
@@ -97,7 +98,7 @@
     }
   },
   "dependencies": {
-    "@prisma/client": "^5.8.1",
+    "@prisma/client": "5.8.1",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-label": "^2.0.2",
@@ -116,7 +117,6 @@
     "next-themes": "^0.2.1",
     "node-notifier": "^10.0.1",
     "node-schedule": "^2.1.1",
-    "prisma": "^5.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
@@ -180,6 +180,7 @@
     "postcss": "^8.4.33",
     "postcss-loader": "^8.0.0",
     "prettier": "^3.0.3",
+    "prisma": "5.8.1",
     "react-refresh": "^0.14.0",
     "react-test-renderer": "^18.2.0",
     "rimraf": "^5.0.1",
@@ -204,7 +205,7 @@
     "productName": "Dachu",
     "appId": "com.zzenz.dapp",
     "asar": true,
-    "asarUnpack": "**\\*.{node,dll}",
+    "asarUnpack": "**\\*.{node,dll,dylib}",
     "files": [
       "dist",
       "node_modules",
@@ -256,7 +257,10 @@
       "output": "release/build"
     },
     "extraResources": [
-      "./assets/**"
+      "./assets/**",
+      "./prisma/**",
+      "./node_modules/.prisma/**",
+      "./node_modules/@prisma/**/*"
     ],
     "publish": {
       "provider": "github",
