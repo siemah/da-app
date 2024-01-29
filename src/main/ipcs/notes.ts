@@ -2,8 +2,20 @@ import { ipcMain } from 'electron';
 import CHANNELS from '../../config/channels';
 import prisma from '../config/db';
 
+type Note = {
+  id: number;
+  title: string;
+  content: string;
+};
+
 export default function notesIPC() {
   ipcMain.on(CHANNELS.FETCH_NOTES, async (event) => {
+    // await prisma.notes.create({
+    //   data: {
+    //     title: `${Math.random()}`,
+    //     content: `${Math.random()}`,
+    //   },
+    // });
     const notes = await prisma.notes.findMany({
       select: {
         id: true,
@@ -19,12 +31,11 @@ export default function notesIPC() {
   });
   ipcMain.on(
     CHANNELS.SAVE_NOTE,
-    async (event, noteData: Record<string, string>) => {
+    async (event, noteData: Omit<Note, 'id'> & Partial<Note>) => {
       const data = {
         title: noteData.title,
         content: noteData.content,
       };
-      // await prisma.notes.deleteMany()
       const note = await prisma.notes.upsert({
         create: data,
         update: {
@@ -32,7 +43,7 @@ export default function notesIPC() {
           updatedAt: new Date(),
         },
         where: {
-          id: Number(noteData.id) || -1,
+          id: noteData.id || -1,
         },
         select: {
           id: true,
@@ -42,7 +53,10 @@ export default function notesIPC() {
         },
       });
       event.reply(CHANNELS.SAVE_NOTE, {
-        message: 'Note created with success',
+        message:
+          noteData.id !== null
+            ? 'Note updated with success'
+            : 'Note created with success',
         data: note,
         isUpdate: !!noteData.id,
       });
