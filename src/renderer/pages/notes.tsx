@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react';
 import CHANNELS from '@/config/channels';
 import {
   IoSearchOutline,
@@ -6,6 +13,7 @@ import {
   IoSaveOutline,
 } from 'react-icons/io5';
 import Layout from '@/renderer/components/layout';
+import { Note } from '@/types/data';
 import { Label } from '@/renderer/components/ui/label';
 import { Input } from '@/renderer/components/ui/input';
 import { Checkbox } from '@/renderer/components/ui/checkbox';
@@ -60,11 +68,15 @@ export default function Notes() {
       editorValue: '',
       selectedNote: null,
       editorMode: 'edit',
+      filtredNotes: [],
     },
   });
+  const listOfNotes =
+    state.data.filtredNotes.length > 0
+      ? state.data.filtredNotes
+      : state.data.notes;
   const onSaveNote = useCallback(() => {
     const content = state.data.editorValue;
-    console.log(`saving btn clicked ${state.data.selectedNote}`);
     const [rawTitle] = content.split(`\n`);
     const title = rawTitle.replaceAll('#', '').trim();
 
@@ -151,16 +163,11 @@ export default function Notes() {
     });
   };
   const onCheckedChange = (noteId: number) => (isChecked: boolean) => {
-    // todo: verify the checked state
-    // todo: if true get note id&content then update the state accordingly
-    // todo: otherwise set content to empty string and a selected note to null
     let editorProps;
-    console.log(`mode ${isChecked ? 'preview' : 'edit'}`);
     if (isChecked === true) {
       const selectedNote = [...state.data.notes].find((note) => {
         return `${note.id}` === `${noteId}`;
       });
-      console.log(`selected ${noteId}`);
       editorProps = {
         selectedNote: noteId,
         editorValue: selectedNote.content,
@@ -192,12 +199,27 @@ export default function Notes() {
       clearTimeout(timeID);
     }, 300);
   }, []);
+  const onSearch = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value: searchText } = event.currentTarget;
+      const filtredNotes = state.data.notes.filter((note: Note) => {
+        return `${note?.title}`?.includes(searchText);
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        payload: {
+          key: 'filtredNotes',
+          value: filtredNotes,
+        },
+      });
+    },
+    [state.data.notes],
+  );
 
   // save/update note/s
   useEffect(() => {
     const saveNote = (data: any) => {
       const savedNote = data.data;
-      console.log(`save-note-item-${data.data.id}`);
       toast('Saving Note', {
         description: data.message,
         duration: 5000,
@@ -205,7 +227,6 @@ export default function Notes() {
         icon: <SuccessCheckIcon />,
         id: `save-note-item-${savedNote.id}`,
       });
-      console.log(`it is an update ${data.isUpdate ? 'yes' : 'nope'}`);
       // update note
       if (data.isUpdate === true && state.data.notes.length > 0) {
         const updatedNoteIndex = [...state.data.notes].findIndex(
@@ -275,7 +296,6 @@ export default function Notes() {
   // fetch notes events
   useEffect(() => {
     const fetchNotes = (notesList: Record<string, string>[]) => {
-      console.log('fetching notes..');
       dispatch({
         type: 'SET_FIELDS',
         payload: {
@@ -309,6 +329,7 @@ export default function Notes() {
               name="query"
               placeholder="Search for notes"
               className="flex-1 font-light border-0 rounded-none text-white bg-transparent !placeholder-slate-300 text-lg pl-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!outline-none"
+              onChange={onSearch}
             />
             <Button
               variant="outline"
@@ -320,7 +341,7 @@ export default function Notes() {
           </div>
           {/* notes items */}
           <ul className="notes-list flex flex-col gap-1">
-            {state.data.notes.map((note: Record<string, string>) => (
+            {listOfNotes.map((note: Record<string, string>) => (
               <Label
                 key={`note-item-${note.id}`}
                 className="flex flex-row gap-3 items-center rounded-lg has-[span[data-state=checked]]:bg-black has-[span[data-state=checked]]:bg-opacity-15 hover:bg-black hover:bg-opacity-15 cursor-pointer p-4"

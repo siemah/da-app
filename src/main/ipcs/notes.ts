@@ -1,12 +1,7 @@
 import { ipcMain } from 'electron';
+import { Note } from '@/types/data';
 import CHANNELS from '../../config/channels';
 import prisma from '../config/db';
-
-type Note = {
-  id: number;
-  title: string;
-  content: string;
-};
 
 export default function notesIPC() {
   ipcMain.on(CHANNELS.FETCH_NOTES, async (event) => {
