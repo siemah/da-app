@@ -11,9 +11,48 @@ datasource db {
 }
 
 model notes {
-  id      Int @id @unique @default(autoincrement())
+  id      Int    @id @unique @default(autoincrement())
   title   String
   content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model clients {
+  id   Int    @id @unique @default(autoincrement())
+  name String
+
+  versioning versions[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model versions {
+  id        Int        @id @unique @default(autoincrement())
+  name      String
+  duration  Float // the time it took to realse it in days
+  startAt   DateTime   @default(now())
+  endAt     DateTime   @default(now())
+  cost      Float
+  // clients-versions
+  clients   clients?   @relation(fields: [clientsId], references: [id])
+  clientsId Int?
+  // versions-payments
+  versement payments[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model payments {
+  id         Int       @id @unique @default(autoincrement())
+  amount     Float
+  note       String?   @default(dbgenerated("NULL"))
+  // versions-payments
+  versions   versions? @relation(fields: [versionsId], references: [id])
+  versionsId Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

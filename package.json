@@ -48,17 +48,17 @@
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "jest",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:mig:status": "prisma migrate status",
+    "db:mig:dev": "prisma migrate dev --name",
+    "db:mig:deploy": "prisma migrate deploy"
   },
   "browserslist": [],
   "prettier": {
     "singleQuote": true,
     "overrides": [
       {
-        "files": [
-          ".prettierrc",
-          ".eslintrc"
-        ],
+        "files": [".prettierrc", ".eslintrc"],
         "options": {
           "parser": "json"
         }
@@ -66,33 +66,18 @@
     ]
   },
   "jest": {
-    "moduleDirectories": [
-      "node_modules",
-      "release/app/node_modules",
-      "src"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "ts",
-      "tsx",
-      "json"
-    ],
+    "moduleDirectories": ["node_modules", "release/app/node_modules", "src"],
+    "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
-    "setupFiles": [
-      "./.erb/scripts/check-build-exists.ts"
-    ],
+    "setupFiles": ["./.erb/scripts/check-build-exists.ts"],
     "testEnvironment": "jsdom",
     "testEnvironmentOptions": {
       "url": "http://localhost/"
     },
-    "testPathIgnorePatterns": [
-      "release/app/dist",
-      ".erb/dll"
-    ],
+    "testPathIgnorePatterns": ["release/app/dist", ".erb/dll"],
     "transform": {
       "\\.(ts|tsx|js|jsx)$": "ts-jest"
     }
@@ -206,19 +191,12 @@
     "appId": "com.zzenz.dapp",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll,dylib}",
-    "files": [
-      "dist",
-      "node_modules",
-      "package.json"
-    ],
+    "files": ["dist", "node_modules", "package.json"],
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
       "target": {
         "target": "default",
-        "arch": [
-          "arm64",
-          "x64"
-        ]
+        "arch": ["arm64", "x64"]
       },
       "type": "distribution",
       "hardenedRuntime": true,
@@ -241,14 +219,10 @@
       ]
     },
     "win": {
-      "target": [
-        "nsis"
-      ]
+      "target": ["nsis"]
     },
     "linux": {
-      "target": [
-        "AppImage"
-      ],
+      "target": ["AppImage"],
       "category": "Development"
     },
     "directories": {
@@ -276,10 +250,7 @@
     "npm": ">=7.x"
   },
   "electronmon": {
-    "patterns": [
-      "!**/**",
-      "src/main/**"
-    ],
+    "patterns": ["!**/**", "src/main/**"],
     "logLevel": "quiet"
   }
 }
