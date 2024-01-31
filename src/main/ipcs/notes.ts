@@ -5,12 +5,6 @@ import prisma from '../config/db';
 
 export default function notesIPC() {
   ipcMain.on(CHANNELS.FETCH_NOTES, async (event) => {
-    // await prisma.notes.create({
-    //   data: {
-    //     title: `${Math.random()}`,
-    //     content: `${Math.random()}`,
-    //   },
-    // });
     const notes = await prisma.notes.findMany({
       select: {
         id: true,

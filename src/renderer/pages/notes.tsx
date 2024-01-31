@@ -7,30 +7,16 @@ import {
   useRef,
 } from 'react';
 import CHANNELS from '@/config/channels';
-import {
-  IoSearchOutline,
-  IoChevronForwardOutline,
-  IoSaveOutline,
-} from 'react-icons/io5';
+import { IoSaveOutline } from 'react-icons/io5';
 import Layout from '@/renderer/components/layout';
 import { Note } from '@/types/data';
-import { Label } from '@/renderer/components/ui/label';
-import { Input } from '@/renderer/components/ui/input';
-import { Checkbox } from '@/renderer/components/ui/checkbox';
 import MDEditor, { commands, RefMDEditor } from '@uiw/react-md-editor';
 import { toast } from 'sonner';
-import { BsFileEarmarkPlus, BsFileEarmarkMinus } from 'react-icons/bs';
-import { FaCircleCheck } from 'react-icons/fa6';
-import { Button } from '../components/ui/button';
-import { globalReducer } from '../lib/reducer';
-
-function SuccessCheckIcon() {
-  return (
-    <div className="flex items-center justify-center">
-      <FaCircleCheck className="h-6 w-6 text-green-500" />
-    </div>
-  );
-}
+import { BsFileEarmarkMinus } from 'react-icons/bs';
+import { Button } from '@/renderer/components/ui/button';
+import SuccessCheckIcon from '@/renderer/components/toas-success-icon';
+import { globalReducer } from '@/renderer/lib/reducer';
+import SideList from '@/renderer/components/side-list';
 
 const mdxCommands = [
   commands.bold,
@@ -153,12 +139,12 @@ export default function Notes() {
     ],
     [onSaveNote, onDeleteNote],
   );
-  const onChangeNoteContent = (content: string) => {
+  const onChangeNoteContent = (content?: string) => {
     dispatch({
       type: 'SET_FIELD',
       payload: {
         key: 'editorValue',
-        value: content,
+        value: content || '',
       },
     });
   };
@@ -203,7 +189,9 @@ export default function Notes() {
     (event: ChangeEvent<HTMLInputElement>) => {
       const { value: searchText } = event.currentTarget;
       const filtredNotes = state.data.notes.filter((note: Note) => {
-        return `${note?.title}`?.includes(searchText);
+        return `${note?.title}`
+          ?.toLowerCase()
+          ?.includes(searchText.toLowerCase());
       });
       dispatch({
         type: 'SET_FIELD',
@@ -214,6 +202,19 @@ export default function Notes() {
       });
     },
     [state.data.notes],
+  );
+  const renderItem = useCallback(
+    (dataItem: Note) => (
+      <>
+        <h2 className="truncate text-white text-xl font-medium first-letter:uppercase">
+          {dataItem.title}
+        </h2>
+        <p className="truncate text-slate-300 text-sm max-w-full">
+          {dataItem.content}
+        </p>
+      </>
+    ),
+    [],
   );
 
   // save/update note/s
@@ -316,55 +317,14 @@ export default function Notes() {
   return (
     <Layout title="Notes">
       <div className="pr-3 flex flex-row w-full h-[100vh] overflow-y-scroll">
-        <div className="py-6 flex flex-col gap-4 w-72 h-full overflow-y-scroll">
-          <div className="group/parent min-w-full flex flex-row gap-2 max-w-52 border-b border-slate-300 has-[:focus]:border-white items-center">
-            <Label
-              htmlFor="query"
-              className="flex items-center justify-center text-slate-300 group-focus-within/parent:text-white"
-            >
-              <IoSearchOutline className="h-6 w-6" />
-            </Label>
-            <Input
-              id="query"
-              name="query"
-              placeholder="Search for notes"
-              className="flex-1 font-light border-0 rounded-none text-white bg-transparent !placeholder-slate-300 text-lg pl-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!outline-none"
-              onChange={onSearch}
-            />
-            <Button
-              variant="outline"
-              className="p-1 group/btn bg-transparent hover:bg-black hover:bg-opacity-20 border-none mr-2"
-              onClick={onCreateNew}
-            >
-              <BsFileEarmarkPlus className="h-6 w-6 text-slate-300 group-hover/btn:text-white" />
-            </Button>
-          </div>
-          {/* notes items */}
-          <ul className="notes-list flex flex-col gap-1">
-            {listOfNotes.map((note: Record<string, string>) => (
-              <Label
-                key={`note-item-${note.id}`}
-                className="flex flex-row gap-3 items-center rounded-lg has-[span[data-state=checked]]:bg-black has-[span[data-state=checked]]:bg-opacity-15 hover:bg-black hover:bg-opacity-15 cursor-pointer p-4"
-              >
-                <Checkbox
-                  id="note-id"
-                  className="h-6 w-6 rounded-full border-slate-200 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
-                  onCheckedChange={onCheckedChange(Number(note.id))}
-                  checked={`${state.data.selectedNote}` === `${note.id}`}
-                />
-                <div className="flex-1 flex flex-col gap-1 w-[calc(100%_-_5rem)]">
-                  <h2 className="truncate text-white text-xl font-medium first-letter:uppercase">
-                    {note.title}
-                  </h2>
-                  <p className="truncate text-slate-300 text-sm max-w-full">
-                    {note.content}
-                  </p>
-                </div>
-                <IoChevronForwardOutline className="h-6 w-6 text-slate-200" />
-              </Label>
-            ))}
-          </ul>
-        </div>
+        <SideList<Note>
+          checkedId={state.data.selectedNote}
+          data={listOfNotes}
+          onCheckedChange={onCheckedChange}
+          onCreateNew={onCreateNew}
+          onSearch={onSearch}
+          renderItem={renderItem}
+        />
         <div className="py-6 flex-1 border-l border-slate-300 border-opacity-50">
           <MDEditor
             commands={mdxCommands}
