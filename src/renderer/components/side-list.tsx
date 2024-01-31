@@ -6,7 +6,7 @@ import { BsFileEarmarkPlus } from 'react-icons/bs';
 import { Button } from '@/renderer/components/ui/button';
 import { ChangeEvent, ReactNode } from 'react';
 
-type SideListProps<T extends Record<string, any>> = {
+type SideListProps<T> = {
   data: T[];
   checkedId: number | string;
   onSearch: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -14,7 +14,7 @@ type SideListProps<T extends Record<string, any>> = {
   onCheckedChange: (noteId: number) => (isChecked: boolean) => void;
   renderItem: (data: T) => ReactNode;
 };
-export default function SideList({
+export default function SideList<T = Record<string, any>>({
   data,
   checkedId,
   onSearch,
@@ -34,7 +34,7 @@ export default function SideList({
         <Input
           id="query"
           name="query"
-          placeholder="Search for notes"
+          placeholder="Search for .."
           className="flex-1 font-light border-0 rounded-none text-white bg-transparent !placeholder-slate-300 text-lg pl-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!outline-none"
           onChange={onSearch}
         />

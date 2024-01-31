@@ -3,3 +3,9 @@ export type Note = {
   title: string;
   content: string;
 };
+
+export type Client = {
+  id: number;
+  name: string;
+  updatedAt: string;
+};

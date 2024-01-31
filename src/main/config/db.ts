@@ -1,6 +1,6 @@
 import { app } from 'electron';
-import { PrismaClient } from '@prisma/client';
 import path from 'path';
+import { PrismaClient } from '@prisma/client';
 import { RESOURCES_PATH } from '../utils';
 
 const platformToExecutables = {
