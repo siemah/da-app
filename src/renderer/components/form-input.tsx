@@ -8,7 +8,10 @@ interface FormInputProps extends InputProps {
 }
 
 const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
-  ({ id, label, name, Icon, className = '', placeholder }, ref) => {
+  (
+    { id, label, name, Icon, className = '', type, placeholder, onChange },
+    ref,
+  ) => {
     return (
       <div>
         <Label htmlFor={id || name} className="text-white text-base font-light">
@@ -24,6 +27,8 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
             className={`flex-1 font-light border-0 rounded-none text-white bg-transparent !placeholder-slate-300 text-lg pl-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:!outline-none ${className}`}
             name={name}
             ref={ref}
+            type={type}
+            onChange={onChange}
           />
         </div>
       </div>

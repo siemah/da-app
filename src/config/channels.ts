@@ -5,6 +5,7 @@ const CHANNELS = {
   SAVE_NOTE: 'save_note',
   DELETE_NOTE: 'delete_note',
   FETCH_CLIENTS: 'fetch_clients',
+  SAVE_CLIENT: 'save_client',
 } as const;
 
 type CE = typeof CHANNELS;

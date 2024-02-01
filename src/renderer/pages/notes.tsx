@@ -14,7 +14,7 @@ import MDEditor, { commands, RefMDEditor } from '@uiw/react-md-editor';
 import { toast } from 'sonner';
 import { BsFileEarmarkMinus } from 'react-icons/bs';
 import { Button } from '@/renderer/components/ui/button';
-import SuccessCheckIcon from '@/renderer/components/toas-success-icon';
+import SuccessCheckIcon from '@/renderer/components/toast-success-icon';
 import { globalReducer } from '@/renderer/lib/reducer';
 import SideList from '@/renderer/components/side-list';
 
