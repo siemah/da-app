@@ -22,7 +22,7 @@ model notes {
 model clients {
   id           Int     @id @unique @default(autoincrement())
   name         String
-  phone_nomber String  @default("")
+  phone_number String  @default("")
   email        String? @default(dbgenerated("NULL"))
 
   versioning versions[]
