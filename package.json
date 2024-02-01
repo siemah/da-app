@@ -58,7 +58,10 @@
     "singleQuote": true,
     "overrides": [
       {
-        "files": [".prettierrc", ".eslintrc"],
+        "files": [
+          ".prettierrc",
+          ".eslintrc"
+        ],
         "options": {
           "parser": "json"
         }
@@ -66,24 +69,39 @@
     ]
   },
   "jest": {
-    "moduleDirectories": ["node_modules", "release/app/node_modules", "src"],
-    "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
+    "moduleDirectories": [
+      "node_modules",
+      "release/app/node_modules",
+      "src"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "ts",
+      "tsx",
+      "json"
+    ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
-    "setupFiles": ["./.erb/scripts/check-build-exists.ts"],
+    "setupFiles": [
+      "./.erb/scripts/check-build-exists.ts"
+    ],
     "testEnvironment": "jsdom",
     "testEnvironmentOptions": {
       "url": "http://localhost/"
     },
-    "testPathIgnorePatterns": ["release/app/dist", ".erb/dll"],
+    "testPathIgnorePatterns": [
+      "release/app/dist",
+      ".erb/dll"
+    ],
     "transform": {
       "\\.(ts|tsx|js|jsx)$": "ts-jest"
     }
   },
   "dependencies": {
-    "@prisma/client": "5.8.1",
+    "@prisma/client": "^5.9.1",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-label": "^2.0.2",
@@ -165,7 +183,7 @@
     "postcss": "^8.4.33",
     "postcss-loader": "^8.0.0",
     "prettier": "^3.0.3",
-    "prisma": "5.8.1",
+    "prisma": "^5.9.1",
     "react-refresh": "^0.14.0",
     "react-test-renderer": "^18.2.0",
     "rimraf": "^5.0.1",
@@ -191,12 +209,19 @@
     "appId": "com.zzenz.dapp",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll,dylib}",
-    "files": ["dist", "node_modules", "package.json"],
+    "files": [
+      "dist",
+      "node_modules",
+      "package.json"
+    ],
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
       "target": {
         "target": "default",
-        "arch": ["arm64", "x64"]
+        "arch": [
+          "arm64",
+          "x64"
+        ]
       },
       "type": "distribution",
       "hardenedRuntime": true,
@@ -219,10 +244,14 @@
       ]
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Development"
     },
     "directories": {
@@ -250,7 +279,10 @@
     "npm": ">=7.x"
   },
   "electronmon": {
-    "patterns": ["!**/**", "src/main/**"],
+    "patterns": [
+      "!**/**",
+      "src/main/**"
+    ],
     "logLevel": "quiet"
   }
 }
