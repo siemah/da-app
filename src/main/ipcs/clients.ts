@@ -38,7 +38,7 @@ export default function clientsIPC() {
     CHANNELS.SAVE_CLIENT,
     async (event, newClient: Omit<Client, 'id'> & Partial<Client>) => {
       const { id, ...data } = newClient;
-      let isUpdate = !!id;
+      const isUpdate = !!id;
       let response;
 
       try {

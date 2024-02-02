@@ -1,4 +1,11 @@
-import { FormEvent, useCallback, useEffect, useReducer, useRef } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react';
 import CHANNELS from '@/config/channels';
 import Layout from '@/renderer/components/layout';
 import { Client } from '@/types/data';
@@ -91,6 +98,28 @@ export default function Clients() {
       payload: updatedProps,
     });
   };
+  const onSearch = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value: searchText } = event.currentTarget;
+      const filtredClients = state.data.list.filter((clnt: Client) => {
+        return (
+          `${clnt?.name}`?.toLowerCase()?.includes(searchText.toLowerCase()) ||
+          `${clnt?.phone_number}`
+            ?.toLowerCase()
+            ?.includes(searchText.toLowerCase()) ||
+          `${clnt?.email}`?.toLowerCase()?.includes(searchText.toLowerCase())
+        );
+      });
+
+      dispatch({
+        type: 'SET_FIELDS',
+        payload: {
+          filtredList: filtredClients,
+        },
+      });
+    },
+    [state.data.list],
+  );
   // save client
   useEffect(() => {
     const saveClient = ({
@@ -177,7 +206,7 @@ export default function Clients() {
           data={dataList}
           onCheckedChange={onCheckedChange}
           onCreateNew={onCreateNew}
-          onSearch={() => {}}
+          onSearch={onSearch}
           renderItem={renderItem}
         />
         <div className="py-6 flex-1 border-l border-slate-300 border-opacity-50">
