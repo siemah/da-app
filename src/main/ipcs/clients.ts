@@ -80,4 +80,35 @@ export default function clientsIPC() {
       event.reply(CHANNELS.SAVE_CLIENT, response);
     },
   );
+  ipcMain.on(CHANNELS.DELETE_CLIENT, async (event, id: number) => {
+    let response;
+
+    try {
+      const client = await prisma.clients.delete({
+        where: {
+          id,
+        },
+      });
+      response = {
+        message: `Client "${client.name}" removed successfully!`,
+        data: client,
+      };
+    } catch (error) {
+      let errorMessage = 'Something went wrong!';
+
+      if (error instanceof PrismaClientValidationError) {
+        errorMessage = 'Please select an existing client!';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      response = {
+        errors: {
+          global: errorMessage,
+        },
+      };
+    }
+
+    event.reply(CHANNELS.DELETE_CLIENT, response);
+  });
 }

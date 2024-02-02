@@ -12,9 +12,11 @@ import { Client } from '@/types/data';
 import { globalReducer } from '@/renderer/lib/reducer';
 import SideList from '@/renderer/components/side-list';
 import { toast } from 'sonner';
-import SuccessCheckIcon from '../components/toast-success-icon';
-import DangerIcon from '../components/toast-danger-icon';
-import ClientForm from '../components/client-form';
+import SuccessCheckIcon from '@/renderer/components/toast-success-icon';
+import DangerIcon from '@/renderer/components/toast-danger-icon';
+import ClientForm from '@/renderer/components/client-form';
+import { GoAlertFill } from 'react-icons/go';
+import Modal from '../components/modal';
 
 export default function Clients() {
   const clientFormRef = useRef<HTMLFormElement>(null);
@@ -25,7 +27,7 @@ export default function Clients() {
       selected: null,
       filtredList: [],
       ui: {
-        showCreate: false,
+        showModal: false,
       },
     },
   });
@@ -120,6 +122,30 @@ export default function Clients() {
     },
     [state.data.list],
   );
+  const onToggleModal = useCallback(() => {
+    dispatch({
+      type: 'SET_FIELDS',
+      payload: {
+        ui: {
+          showModal: !state.data.ui.showModal,
+        },
+      },
+    });
+  }, [state.data.ui.showModal]);
+  const onSubmitRemoval = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (state.data.selected === null) return;
+
+    dispatch({
+      type: 'SET_LOADING',
+      payload: true,
+    });
+    window.electron.ipcRenderer.sendMessage(
+      CHANNELS.DELETE_CLIENT,
+      state.data.selected,
+    );
+  };
   // save client
   useEffect(() => {
     const saveClient = ({
@@ -175,9 +201,40 @@ export default function Clients() {
         });
       }
     };
+    const deleteClient = ({ data, message, errors }: any) => {
+      const isSuccess = message !== undefined;
+      const toastConfig = {
+        description: isSuccess ? message : errors?.global,
+        id: `delete-client-toast-${data?.id}`,
+        duration: 5000,
+        dismissible: true,
+        icon: isSuccess ? <SuccessCheckIcon /> : <DangerIcon />,
+      };
+      toast('Client removal!', toastConfig);
+      dispatch({
+        type: 'SET_LOADING',
+        payload: false,
+      });
+      const newList = [...state.data.list].filter(
+        (clnt: Client) => clnt.id !== data.id,
+      );
+      dispatch({
+        type: 'SET_FIELDS',
+        payload: {
+          list: newList,
+          selected: newList?.[0]?.id || null,
+          ui: {
+            showModal: false,
+          },
+        },
+      });
+    };
     window.electron.ipcRenderer.once(CHANNELS.SAVE_CLIENT, saveClient);
+    window.electron.ipcRenderer.once(CHANNELS.DELETE_CLIENT, deleteClient);
+
     return () => {
       window.electron.ipcRenderer.off(CHANNELS.SAVE_CLIENT, saveClient);
+      window.electron.ipcRenderer.off(CHANNELS.DELETE_CLIENT, deleteClient);
     };
   }, [state.data.list]);
   // fetch clients
@@ -216,6 +273,24 @@ export default function Clients() {
             onSubmit={onSubmit}
             disabled={state.loading}
             className="px-3 flex flex-col gap-6"
+            onDelete={onToggleModal}
+          />
+          <Modal
+            show={state.data.ui.showModal}
+            onClose={onToggleModal}
+            onConfirm={onSubmitRemoval}
+            header="Remove the selected client!"
+            icon={<GoAlertFill className="h-32 w-32 text-red-500" />}
+            description={
+              <>
+                All related data will be removed as well. Are you sure about
+                this? {` `}
+                <span className="text-red-500 text-base italic bg-red-100 p-0.5 rounded">
+                  {`you can't undo this action`}
+                </span>
+                .
+              </>
+            }
           />
         </div>
       </div>
