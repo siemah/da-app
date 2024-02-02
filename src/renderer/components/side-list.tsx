@@ -51,7 +51,7 @@ export default function SideList<T = Record<string, any>>({
         {data.map((dataItem) => (
           <Label
             key={`note-item-${dataItem?.id}`}
-            className="flex flex-row gap-3 items-center rounded-lg has-[span[data-state=checked]]:bg-black has-[span[data-state=checked]]:bg-opacity-15 hover:bg-black hover:bg-opacity-15 cursor-pointer p-4"
+            className="flex flex-row gap-3 mr-2 items-center rounded-lg has-[span[data-state=checked]]:bg-black has-[span[data-state=checked]]:bg-opacity-15 hover:bg-black hover:bg-opacity-15 cursor-pointer p-4"
           >
             <Checkbox
               id="note-id"

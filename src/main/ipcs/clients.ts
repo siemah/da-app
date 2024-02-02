@@ -37,16 +37,29 @@ export default function clientsIPC() {
   ipcMain.on(
     CHANNELS.SAVE_CLIENT,
     async (event, newClient: Omit<Client, 'id'> & Partial<Client>) => {
+      const { id, ...data } = newClient;
+      let isUpdate = !!id;
       let response;
 
       try {
-        const client = await prisma.clients.create({
-          data: newClient,
+        const client = await prisma.clients.upsert({
+          create: data,
+          update: {
+            ...data,
+            updatedAt: new Date(),
+          },
+          where: {
+            id: parseInt(`${id}`, 10) || -1,
+          },
           select,
         });
         response = {
           data: client,
-          message: `Client ${newClient.name} created with success!`,
+          isUpdate,
+          message:
+            isUpdate === true
+              ? `Client "${newClient.name}" updated successfully!`
+              : `Client "${newClient.name}" created with success!`,
         };
       } catch (error) {
         let errorMessage = 'Something went wrong!';

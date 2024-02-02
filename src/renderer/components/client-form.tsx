@@ -19,6 +19,9 @@ const ClientForm = forwardRef<HTMLFormElement, ClientFormProps>(
   ({ data, disabled, className, onSubmit }, ref) => {
     return (
       <form onSubmit={onSubmit} ref={ref} className={className}>
+        {data?.id !== undefined && (
+          <input name="id" type="hidden" defaultValue={data?.id} />
+        )}
         <FormInput
           name="name"
           defaultValue={data?.name}

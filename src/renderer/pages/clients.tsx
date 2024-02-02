@@ -53,12 +53,37 @@ export default function Clients() {
       payload: true,
     });
     const formData = new FormData(event.currentTarget);
-    const newClient = {
+    const id = formData.get('id');
+    let newClient = {
       name: formData.get('name') || null,
       phone_number: formData.get('phone_number') || null,
       email: formData.get('email') || null,
     };
+
+    if (id !== '' && id !== null) {
+      // @ts-ignore
+      newClient = { ...newClient, id };
+    }
+
     window.electron.ipcRenderer.sendMessage(CHANNELS.SAVE_CLIENT, newClient);
+  };
+  const onCheckedChange = (currentId: number) => (isChecked: boolean) => {
+    let updatedProps;
+
+    if (isChecked === true) {
+      updatedProps = {
+        selected: currentId,
+      };
+    } else {
+      updatedProps = {
+        selectedNote: null,
+      };
+    }
+
+    dispatch({
+      type: 'SET_FIELDS',
+      payload: updatedProps,
+    });
   };
   // save client
   useEffect(() => {
@@ -86,12 +111,28 @@ export default function Clients() {
 
       if (isUpdate === true) {
         // todo: update client
+        const list = [...state.data.list];
+        const updatedClientIndex = list.findIndex(
+          (clnt: Client) => clnt.id === clientData.id,
+        );
+
+        if (updatedClientIndex >= 0) {
+          list[updatedClientIndex] = clientData;
+        }
+
+        dispatch({
+          type: 'SET_FIELDS',
+          payload: {
+            list,
+            selected: clientData?.id || null,
+          },
+        });
       } else {
         dispatch({
           type: 'SET_FIELDS',
           payload: {
             list: [clientData, ...state.data.list],
-            selected: clientData?.id || state.data.list?.[0]?.id || null,
+            selected: clientData?.id || null,
           },
         });
       }
@@ -125,18 +166,18 @@ export default function Clients() {
         <SideList<Client>
           checkedId={state.data.selected}
           data={dataList}
-          onCheckedChange={() => () => {}}
+          onCheckedChange={onCheckedChange}
           onCreateNew={onCreateNew}
           onSearch={() => {}}
           renderItem={renderItem}
         />
-        <div className="py-6 flex-1">
+        <div className="py-6 flex-1 border-l border-slate-300 border-opacity-50">
           <ClientForm
             data={selectedClientData}
             ref={clientFormRef}
             onSubmit={onSubmit}
             disabled={state.loading}
-            className="px-3 flex flex-col gap-6 border-l border-slate-300 border-opacity-50"
+            className="px-3 flex flex-col gap-6"
           />
         </div>
       </div>
