@@ -1,24 +1,18 @@
-import { FormEvent, useEffect, useReducer, useRef } from 'react';
+import { FormEvent, useCallback, useEffect, useReducer, useRef } from 'react';
 import CHANNELS from '@/config/channels';
 import Layout from '@/renderer/components/layout';
 import { Client } from '@/types/data';
 import { globalReducer } from '@/renderer/lib/reducer';
 import SideList from '@/renderer/components/side-list';
-import FormInput from '@/renderer/components/form-input';
-import {
-  IoBusiness,
-  IoPhonePortraitOutline,
-  IoMailOutline,
-} from 'react-icons/io5';
-import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import SuccessCheckIcon from '../components/toast-success-icon';
 import DangerIcon from '../components/toast-danger-icon';
+import ClientForm from '../components/client-form';
 
 export default function Clients() {
   const clientFormRef = useRef<HTMLFormElement>(null);
   const [state, dispatch] = useReducer(globalReducer, {
-    loading: false,
+    loading: true,
     data: {
       list: [],
       selected: null,
@@ -28,20 +22,26 @@ export default function Clients() {
       },
     },
   });
+  const selectedClientData = state.data.list.find(
+    (client: Client) => client.id === state.data.selected,
+  );
   const dataList =
     state.data.filtredList.length > 0
       ? state.data.filtredList
       : state.data.list;
 
-  const renderItem = (dataItem: Client) => (
-    <>
-      <h2 className="truncate text-white text-xl font-medium first-letter:uppercase">
-        {dataItem.name}
-      </h2>
-      <p className="truncate text-slate-300 text-sm max-w-full">
-        {new Date(dataItem.updatedAt).toLocaleDateString()}
-      </p>
-    </>
+  const renderItem = useCallback(
+    (dataItem: Client) => (
+      <>
+        <h2 className="truncate text-white text-xl font-medium first-letter:uppercase">
+          {dataItem.name}
+        </h2>
+        <p className="truncate text-slate-300 text-sm max-w-full">
+          {new Date(dataItem.updatedAt).toLocaleDateString()}
+        </p>
+      </>
+    ),
+    [],
   );
   const onCreateNew = () => {
     // todo: show a form in the main ui
@@ -62,7 +62,12 @@ export default function Clients() {
   };
   // save client
   useEffect(() => {
-    const saveClient = ({ data: clientData, message, errors }: any) => {
+    const saveClient = ({
+      data: clientData,
+      message,
+      errors,
+      isUpdate,
+    }: any) => {
       const isSuccess = message !== undefined;
       const toastConfig = {
         description: isSuccess ? message : errors?.global,
@@ -71,21 +76,24 @@ export default function Clients() {
         dismissible: true,
         icon: isSuccess ? <SuccessCheckIcon /> : <DangerIcon />,
       };
-      toast('Save client', toastConfig);
+      const toastTitle =
+        isUpdate === true ? `Updating client` : `Saving client`;
+      toast(toastTitle, toastConfig);
       dispatch({
         type: 'SET_LOADING',
         payload: false,
       });
-      dispatch({
-        type: 'SET_FIELDS',
-        payload: {
-          list: [clientData, ...state.data.list],
-          selected: clientData?.id || state.data.list?.[0]?.id || null,
-        },
-      });
 
-      if (isSuccess === true) {
-        clientFormRef.current?.reset();
+      if (isUpdate === true) {
+        // todo: update client
+      } else {
+        dispatch({
+          type: 'SET_FIELDS',
+          payload: {
+            list: [clientData, ...state.data.list],
+            selected: clientData?.id || state.data.list?.[0]?.id || null,
+          },
+        });
       }
     };
     window.electron.ipcRenderer.once(CHANNELS.SAVE_CLIENT, saveClient);
@@ -122,27 +130,15 @@ export default function Clients() {
           onSearch={() => {}}
           renderItem={renderItem}
         />
-        <form
-          onSubmit={onSubmit}
-          className="py-6 px-3 flex-1 flex flex-col gap-6 border-l border-slate-300 border-opacity-50"
-          ref={clientFormRef}
-        >
-          <FormInput name="name" label="Client name" Icon={IoBusiness} />
-          <FormInput
-            name="phone_number"
-            label="Phone number"
-            Icon={IoPhonePortraitOutline}
-          />
-          <FormInput name="email" label="Email" Icon={IoMailOutline} />
-          <Button
-            variant="default"
-            className="rounded-lg w-fit px-14 py-2 h-9 bg-blue-500 hover:bg-blue-400 focus-visible:ring-blue-500"
-            type="submit"
+        <div className="py-6 flex-1">
+          <ClientForm
+            data={selectedClientData}
+            ref={clientFormRef}
+            onSubmit={onSubmit}
             disabled={state.loading}
-          >
-            Save
-          </Button>
-        </form>
+            className="px-3 flex flex-col gap-6 border-l border-slate-300 border-opacity-50"
+          />
+        </div>
       </div>
     </Layout>
   );

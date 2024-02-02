@@ -4,16 +4,19 @@ import CHANNELS from '../../config/channels';
 import prisma from '../config/db';
 import { Client } from '../../types/data';
 
+const select = {
+  id: true,
+  name: true,
+  email: true,
+  phone_number: true,
+  updatedAt: true,
+};
 export default function clientsIPC() {
   ipcMain.on(CHANNELS.FETCH_CLIENTS, async (event) => {
     let response;
     try {
       const clients = await prisma.clients.findMany({
-        select: {
-          id: true,
-          name: true,
-          updatedAt: true,
-        },
+        select,
         orderBy: {
           updatedAt: 'desc',
         },
@@ -39,11 +42,7 @@ export default function clientsIPC() {
       try {
         const client = await prisma.clients.create({
           data: newClient,
-          select: {
-            id: true,
-            name: true,
-            updatedAt: true,
-          },
+          select,
         });
         response = {
           data: client,

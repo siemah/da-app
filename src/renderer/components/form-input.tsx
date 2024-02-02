@@ -4,12 +4,22 @@ import { Input, InputProps } from '@/renderer/components/ui/input';
 
 interface FormInputProps extends InputProps {
   label: string;
-  Icon: React.JSX.ElementType;
+  Icon?: React.JSX.ElementType;
 }
 
 const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   (
-    { id, label, name, Icon, className = '', type, placeholder, onChange },
+    {
+      id,
+      label,
+      name,
+      defaultValue,
+      Icon,
+      className = '',
+      type,
+      placeholder,
+      onChange,
+    },
     ref,
   ) => {
     return (
@@ -18,9 +28,11 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
           {label}
         </Label>
         <div className="group/parent min-w-full flex flex-row gap-2 max-w-52 border-b border-slate-300 has-[:focus]:border-white items-center">
-          <div className="flex items-center justify-center text-slate-300 group-focus-within/parent:text-white">
-            <Icon className="h-6 w-6" />
-          </div>
+          {Icon !== undefined && (
+            <div className="flex items-center justify-center text-slate-300 group-focus-within/parent:text-white">
+              <Icon className="h-6 w-6" />
+            </div>
+          )}
           <Input
             id={id || name}
             placeholder={placeholder}
@@ -29,6 +41,7 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
             ref={ref}
             type={type}
             onChange={onChange}
+            defaultValue={defaultValue}
           />
         </div>
       </div>

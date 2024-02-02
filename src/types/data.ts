@@ -7,5 +7,7 @@ export type Note = {
 export type Client = {
   id: number;
   name: string;
+  email: string;
+  phone_number: string;
   updatedAt: string;
 };
