@@ -23,7 +23,7 @@ export default function Clients() {
     },
   });
   const selectedClientData = state.data.list.find(
-    (client: Client) => client.id === state.data.selected,
+    (client: Client) => client.id === state.data?.selected,
   );
   const dataList =
     state.data.filtredList.length > 0
@@ -44,7 +44,12 @@ export default function Clients() {
     [],
   );
   const onCreateNew = () => {
-    // todo: show a form in the main ui
+    dispatch({
+      type: 'SET_FIELDS',
+      payload: {
+        selected: null,
+      },
+    });
   };
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,6 +70,7 @@ export default function Clients() {
       newClient = { ...newClient, id };
     }
 
+    clientFormRef.current?.reset();
     window.electron.ipcRenderer.sendMessage(CHANNELS.SAVE_CLIENT, newClient);
   };
   const onCheckedChange = (currentId: number) => (isChecked: boolean) => {
@@ -94,9 +100,12 @@ export default function Clients() {
       isUpdate,
     }: any) => {
       const isSuccess = message !== undefined;
+      const toastId = isUpdate
+        ? `update-client-${clientData?.id}`
+        : `save-client-${clientData?.id}`;
       const toastConfig = {
         description: isSuccess ? message : errors?.global,
-        id: `save-client-${clientData?.id}`,
+        id: toastId,
         duration: 5000,
         dismissible: true,
         icon: isSuccess ? <SuccessCheckIcon /> : <DangerIcon />,
